@@ -2,7 +2,7 @@ import React from "react";
 import { PieChart, Pie, Cell } from "recharts";
 
 
-const DonutChart = ({percentage}) => {
+const DonutChart = ({percentage,name}) => {
 
     const completedValue = (percentage / 100) * 270;
     const remainingValue = 270 - completedValue;
@@ -46,6 +46,7 @@ const DonutChart = ({percentage}) => {
 
 
             <h2 className=" font-bold -mt-40 " style={{fontSize:"36px"}}>{percentage}</h2>
+            <h2>{name}</h2>
 
         </div>
     );
