@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import DonutChart from "./test.jsx";
 let data;
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -25,65 +25,74 @@ const temp = async () => {
 
 temp()
 const SensorData = () => {
-    const [sensorData, setSensorData] = useState([]);
-    const [response,setResponse] = useState({});
-    const [switchStates, setSwitchStates] = useState([false, false, false, false]);
-
-    const [motorStatus, setMotorStatus] = useState(null);
-
-
-        const fetchMotorStatus = async () => {
-            try {
-                const response = await fetch("https://9fx3gmg3-3000.inc1.devtunnels.ms/motor-status");
-                const data = await response.json();
-
-                if (data && data.motor_status) {
-                    for(let i = 0; i < data.motor_status.length; i++) {
-                        switchStates[i]=data.motor_status[i];
-
-                    }
-
-                } else {
-                    console.error("Error: No motor status received.");
-                }
-            } catch (error) {
-                console.error("Error fetching motor status:", error);
-            }
-        };
-
-        setInterval(fetchMotorStatus(),2000);
+    const [sensorData, setSensorData] = useState([
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [3, 0],
+    ]);
+    const [buttonState, setButtonState] = useState([false,false,false,false]);
+    const prevMotorState = useRef(buttonState); 
 
 
-    const handleClick = async (num) => {
+
+
+    const sendData = async () => {
+
+
         try {
-            const updatedStates = [...switchStates];
-            updatedStates[num] = !updatedStates[num];
-
-            const res = await fetch("https://9fx3gmg3-3000.inc1.devtunnels.ms/data", {
+            const response = await fetch("https://9fx3gmg3-3000.inc1.devtunnels.ms/motor-post", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(updatedStates ),
+                body: JSON.stringify(buttonState),
             });
 
-            setSwitchStates(updatedStates);
+            if (response.ok) {
+                console.log("Data sent successfully!");
+            } else {
+                console.error("Error sending data:", response.statusText);
+            }
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Network error:", error);
         }
     };
 
 
+
+
+    const handleClick = (index) => {
+        setButtonState(prevStatus => {
+            const newStatus = [...prevStatus];
+            newStatus[index] = !newStatus[index];
+            return newStatus;
+        });
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("https://smartirrigationbackend.onrender.com/get-command");
+                const response = await fetch("https://9fx3gmg3-3000.inc1.devtunnels.ms/get-command");
                 if (!response.ok) throw new Error("Failed to fetch data");
-                data = await response.json();
-                // console.log(data[data.length - 1]);
 
-                setSensorData(data[data.length-1].sensors || []);
-                // console.log(data[data.length-1].sensors[0].temperature);
+                const data = await response.json();
+                setSensorData(data);
+
+                setButtonState((prevState) => {
+                    const updatedMotorStates = data.map(([id, value]) => {
+                        if (value >= 85) return false;
+                        if (value <= 30) return true;
+                        return prevState[id];
+                    });
+
+                    if (JSON.stringify(prevState) !== JSON.stringify(updatedMotorStates)) {
+                        console.log("Updating motor state:", updatedMotorStates);
+                        return updatedMotorStates;
+                    }
+                    return prevState;
+                });
+
             } catch (error) {
                 console.error("Error fetching sensor data:", error);
             }
@@ -94,6 +103,17 @@ const SensorData = () => {
 
         return () => clearInterval(interval);
     }, []);
+
+    
+    useEffect(() => {
+        if (JSON.stringify(buttonState) !== JSON.stringify(prevMotorState.current)) {
+            console.log("Sending motor-post API with:", buttonState);
+            sendData();
+            prevMotorState.current = buttonState; // ✅ Update previous state AFTER API call
+        }
+    }, [buttonState]);
+    
+
     return (
         <>
             <div className={"flex justify-center  pt-8 text-3xl"}><h1  className={"backdrop-blur"} style={{width:"max-content"}}>Smart Irrigation</h1></div>
@@ -111,7 +131,7 @@ const SensorData = () => {
                             <h1 className={"-ml-48"}>Crop-1</h1>
                             <DonutChart percentage={(() => {
                                 try {
-                                    return sensorData[0].moisture;
+                                    return sensorData[0][1];
                                 } catch (err) {
                                     return 0;
                                 }
@@ -121,7 +141,7 @@ const SensorData = () => {
                                 sx={{ display: 'block' }}
                                 control={
                                     <Switch
-                                        checked={switchStates[0]}
+                                        checked={buttonState[0]}
                                         onClick={()=>handleClick(0)}
                                         name="Pump"
                                         color="primary"
@@ -134,7 +154,7 @@ const SensorData = () => {
                             <h1 className={"-ml-48"}>Crop-2</h1>
                             <DonutChart percentage={(() => {
                                 try {
-                                    return sensorData[1].moisture;
+                                    return sensorData[1][1];
                                 } catch (err) {
                                     return 0;
                                 }
@@ -143,8 +163,8 @@ const SensorData = () => {
                                 sx={{ display: 'block' }}
                                 control={
                                     <Switch
-                                        checked={switchStates[1]}
-                                        onChange={()=>handleClick(1)}
+                                        checked={buttonState[1]}
+                                        onClick={()=>handleClick(1)}
                                         name="Pump"
                                         color="primary"
                                     />
@@ -159,7 +179,7 @@ const SensorData = () => {
                             <h1 className={"-ml-48"}>Crop-3</h1>
                             <DonutChart percentage={(() => {
                                 try {
-                                    return sensorData[2].moisture;
+                                    return sensorData[2][1];
                                 } catch (err) {
                                     return 0;
                                 }
@@ -169,7 +189,7 @@ const SensorData = () => {
                                 sx={{display: 'block'}}
                                 control={
                                     <Switch
-                                        checked={switchStates[2]}
+                                        checked={buttonState[2]}
                                         onClick={() => handleClick(2)}
                                         name="Pump"
                                         color="primary"
@@ -184,7 +204,7 @@ const SensorData = () => {
                             <h1 className={"-ml-48"}>Crop-4</h1>
                             <DonutChart percentage={(() => {
                                 try {
-                                    return sensorData[3].moisture;
+                                    return sensorData[3][1];
                                 } catch (err) {
                                     return 0;
                                 }
@@ -194,7 +214,7 @@ const SensorData = () => {
                                 sx={{display: 'block'}}
                                 control={
                                     <Switch
-                                        checked={switchStates[3]}
+                                        checked={buttonState[3]}
                                         onClick={() => handleClick(3)}
                                         name="Pump"
                                         color="primary"
@@ -224,6 +244,8 @@ const SensorData = () => {
     </div>
         </>
     );
+
+    
 };
 
 export default SensorData;
