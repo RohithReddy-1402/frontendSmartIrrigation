@@ -5,7 +5,7 @@ function App() {
     return (
         <>
 
-        <div>
+        <div className="bg-image">
             <SensorData />
         </div>
         </>

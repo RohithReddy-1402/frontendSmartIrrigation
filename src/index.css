@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-image {
+    background-image: url('./assets//backGround.jpg');
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    min-height: 100vh;
+}
+
+@media (max-width: 768px) { 
+    .title {
+        padding-top: 4px !important; 
+    }
+
+    .table-container {
+        margin-top: -10px !important; 
+    }
+}
+/* .responsive-table {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 3rem;
+}
+
+@media (max-width: 768px) { 
+    .responsive-table {
+        justify-content: center;    
+        margin-top: 2rem;
+    }
+} */
