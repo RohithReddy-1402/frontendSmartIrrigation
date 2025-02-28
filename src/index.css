@@ -31,3 +31,44 @@
         margin-top: 2rem;
     }
 } */
+
+nav {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.hero {
+    background-image: url('./assets/backGround.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3rem; /* Adjust font size for larger screens */
+}
+
+.hero p {
+    font-size: 1.25rem; /* Adjust font size for larger screens */
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem; /* Smaller font size for mobile */
+    }
+
+    .hero p {
+        font-size: 1rem; /* Smaller font size for mobile */
+    }
+}

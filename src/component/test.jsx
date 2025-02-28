@@ -46,7 +46,7 @@ const DonutChart = ({percentage,name}) => {
 
 
             <h2 className=" font-bold -mt-40 " style={{fontSize:"36px"}}>{percentage}</h2>
-            <h2>{name}</h2>
+            <h2 className="text-lg font-semibold">{name}</h2>
 
         </div>
     );
