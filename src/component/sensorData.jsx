@@ -102,9 +102,9 @@ const SensorData = () => {
     return (
         <div className="flex flex-col items-center">
             <h2 className="text-3xl font-bold text-white mb-4 mt-8">Sensor Data</h2>
-            <div className="flex flex-wrap justify-center mb-8">
+            <div className=" flex flex-wrap justify-center mb-8">
                 {sensorData.map((sensor, index) => (
-                    <div key={index} className="bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
+                    <div key={index} className="bpa bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
                         <h1 className="text-lg font-bold">Crop-{index + 1}</h1>
                         <DonutChart percentage={sensor[1]} name={`Crop-${index + 1}`} />
                         <div className="mt-2">
@@ -116,19 +116,17 @@ const SensorData = () => {
                     </div>
                 ))}
             </div>
-
-            {/* Environmental Data Section */}
             <h2 className="text-3xl font-bold text-white mb-4 mt-8">Environmental Data</h2>
             <div className="flex flex-wrap justify-center">
-                <div className="bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
+                <div className="bpa bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
                     <h1 className="text-lg font-bold">Temperature</h1>
                     <DonutChart percentage={Math.floor(temp_val - 273)} name="Temperature" />
                 </div>
-                <div className="bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
+                <div className="bpa bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
                     <h1 className="text-lg font-bold">Precipitate</h1>
                     <DonutChart percentage={perciptate_val} name="Precipitate" />
                 </div>
-                <div className="bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
+                <div className="bpa bg-black/10 backdrop-blur-sm rounded-lg border border-gray-500 m-4 p-4 w-64 h-64 flex flex-col items-center">
                     <h1 className="text-lg font-bold">Humidity</h1>
                     <DonutChart percentage={humidity_val} name="Humidity" />
                 </div>
